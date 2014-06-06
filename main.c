@@ -380,14 +380,12 @@ void write_cb(struct ev_loop *loop, struct ev_io *w, int revents)
                         localtime_r(&session->start_time, &start);
                         strftime(timestr, sizeof(timestr), "%Y%m%d%H%M.flv", &start);
                         sprintf(fullpath, "%s/%s/%s", session->g_path, session->name, timestr);
-#ifdef DEBUG
-                        //debug
-                        sprintf(fullpath, "%s/%s/same.flv", session->g_path, session->name);
-                        //debug
-#endif
                         session->file_fd = open(fullpath, O_RDONLY);
-                        printf("change file\n");
-                        session->inited_time = 0;
+                        printf("change file %s\n", fullpath);
+                        if (session->file_fd < 0) {
+                            session->start_time -= 60;
+                            session->inited_time = 0;
+                        }
                         break;
                     }
                     if (IS_VIDEO_TAG(tag)) {
